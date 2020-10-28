@@ -4,31 +4,11 @@ public class Driver
 
 	public static void main(String[] args) 
 	{
-		String s = "A elephant lives in the zoo!";
-		System.out.println(s);
-		String answer = Driver.parse(s);
-		System.out.println(Driver.reverse("woot"));
+		VariableEnvironment env = new VariableEnvironment();
+		env.addVariable("a", 5);
+		env.addVariable("b", 7);
+		env.display(); //show all of the variables
+		System.out.println(env.getValue("a")); //5
+		System.out.println(env.getValue("b")); //7
 	}
-	
-	public static String reverse(String s)
-	{
-		String answer = "";
-		for(int i = 0; i < s.length(); i++)
-		{
-			answer = s.charAt(i) + answer;
-		}
-		return answer;
-	}
-	//write a function that takes a string and replaces all
-	//words (tokens) that are at least 5 character long with
-	//the reverse of that token
-	//"A elephant lives in the zoo!" becomes
-	// “A tnahpele sevil in the zoo!”
-	public static String parse(String s)
-	{
-		String[] parts = s.split(" ");
-		
-		return "woot";
-	}
-
 }
