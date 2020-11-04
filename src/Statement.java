@@ -1,5 +1,5 @@
 
-public class Statement 
+public class Statement
 {
 	protected String statementType;
 	
