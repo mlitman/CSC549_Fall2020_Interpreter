@@ -29,6 +29,8 @@ public class SpyderInterpreter
 				SpyderInterpreter.interpretRememberStatement((RememberStatement)s);
 			}
 			//***HW*** add the ability to handle ResolveStatements
+			//theOutput should hold:
+			// <HIDDEN> Resolved a = 5
 		}
 	}
 	
