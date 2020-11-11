@@ -20,19 +20,20 @@ public class Parser
 		}
 	}
 	
-	static ResolveStatement parseResolve(String name)
+	static ResolveExpression parseResolve(String name)
 	{
 		//parse this string into language objects
 		//turn remember syntax into a ResolveStatement
-		ResolveStatement rs = new ResolveStatement(name);
+		ResolveExpression rs = new ResolveExpression(name);
 		return rs;
 	}
 	
-	static RememberStatement parseRemember(String type, String name, String value)
+	static RememberStatement parseRemember(String type, String name, String valueExpression)
 	{
 		//parse this string into language objects
 		//turn remember syntax into a RememberStatement
-		RememberStatement rs = new RememberStatement(type, name, value);
+		ResolveExpression re = (ResolveExpression)Parser.parseExpression(valueExpression);
+		RememberStatement rs = new RememberStatement(type, name, re);
 		return rs;
 	}
 	
@@ -46,7 +47,7 @@ public class Parser
 			String fileContents = "";
 			while(input.hasNext())
 			{
-				fileContents += input.nextLine();
+				fileContents += input.nextLine().trim();
 			}
 			
 			String[] theProgramLines = fileContents.split(";");
@@ -57,11 +58,19 @@ public class Parser
 		}
 		catch(Exception e)
 		{
-			System.err.println("File Not Found!");
+			e.printStackTrace();
+			System.err.println("File Not Found!!!");
 		}
 	}
 	
-	// 
+	static Expression parseExpression(String expression)
+	{
+		//determine which kind of expression this is, and parse it
+		//right now we only have a single kind of expression (ResolveExpression)
+		return Parser.parseResolve(expression);
+	}
+	
+	//parses the top level statements within our language
 	static void parseStatement(String s)
 	{
 		//split the string on white space (1 or more spaces)
@@ -77,12 +86,5 @@ public class Parser
 			theListOfStatements.add(Parser.parseRemember(theParts[1], 
 					theParts[2], theParts[4]));
 		}
-		else if(theParts[0].equals("resolve"))
-		{
-			//write the necessary code to parse the resolve statement
-			//into a ResolveStatement object
-			theListOfStatements.add(Parser.parseResolve(theParts[1]));
-		}
-		
 	}
 }

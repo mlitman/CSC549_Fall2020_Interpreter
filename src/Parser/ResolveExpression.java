@@ -1,12 +1,12 @@
 package Parser;
 
-public class ResolveStatement extends Statement 
+public class ResolveExpression extends Expression 
 {
 	private String name;
 	
-	public ResolveStatement(String name)
+	public ResolveExpression(String name)
 	{
-		super("Resolve Statement");
+		super("Resolve Expression");
 		this.name = name;
 	}
 	
