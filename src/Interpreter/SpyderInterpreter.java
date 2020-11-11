@@ -28,9 +28,24 @@ public class SpyderInterpreter
 				//interpret a remember statement
 				SpyderInterpreter.interpretRememberStatement((RememberStatement)s);
 			}
-			//***HW*** add the ability to handle ResolveStatements
-			//theOutput should hold:
-			// <HIDDEN> Resolved a = 5
+			else if(s instanceof ResolveStatement)
+			{
+				SpyderInterpreter.interpretResolveStatement((ResolveStatement)s);
+			}
+		}
+	}
+	
+	private static void interpretResolveStatement(ResolveStatement rs)
+	{
+		try
+		{
+			int answer = SpyderInterpreter.theEnv.getValue(rs.getName());
+			SpyderInterpreter.theOutput.add("<HIDDEN> Resolved " + rs.getName() + " = " + answer);
+		}
+		catch(Exception e)
+		{
+			System.err.println("Variable " + rs.getName() + " NOT FOUND!");
+			System.exit(1);
 		}
 	}
 	
