@@ -1,3 +1,5 @@
 remember int a = 5;
 remember int b = 7;
-remember int c = b; 
+remember int c = do-math a + b; 
+remember int d = do-math 4 - 2;
+remember int e = do-math 10 % a;

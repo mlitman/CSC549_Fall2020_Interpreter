@@ -9,8 +9,6 @@ public class Driver
 		Parser.parse("input.spyder");
 		//Parser.display();
 		Interpreter.SpyderInterpreter.interpret(Parser.getParsedStatements());
-		Interpreter.SpyderInterpreter.displayResults();
-		int a = 5;	
-		
+		Interpreter.SpyderInterpreter.displayResults();		
 	}
 }
