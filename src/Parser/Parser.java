@@ -33,6 +33,21 @@ public class Parser
 		return "+-*/%".indexOf(s.trim()) > -1;
 	}
 	
+	private static boolean isArithmeticBooleanOp(String s)
+	{
+		//only detect the first part of an arithmetic boolean 
+		//op and then concatenate until space
+		String[] theOps = "< > ! =".split(" ");
+		for(int i = 0; i < theOps.length; i++)
+		{
+			if(theOps[i].equals(s.trim()))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private static int getDoMathExpressionEndBucket(int startPos, String[] theParts)
 	{
 		//do-math do-math a + 7 + do-math b + 4
@@ -56,6 +71,37 @@ public class Parser
 		return startPos;
 		
 	}
+	
+	static TestExpression parseTest(String expression)
+	{
+		//test do-math 5 + 4 < 7
+		expression = expression.substring(5);
+		String left = "";
+		int pos;
+		for(pos = 0; pos < expression.length(); pos++)
+		{
+			if(Parser.isArithmeticBooleanOp("" + expression.charAt(pos)))
+			{
+				break;
+			}
+			left = left + expression.charAt(pos);
+		}
+		
+		//pos is now equal to the position of the beginning of the operator
+		String op = "";
+		while(expression.charAt(pos) != ' ')
+		{
+			op = op + expression.charAt(pos);
+			pos++;
+		}
+		//op should now hold the entire operator
+		
+		String right = expression.substring(pos).trim();
+		Expression leftExpression = Parser.parseExpression(left);
+		Expression rightExpression = Parser.parseExpression(right);
+		return new TestExpression(leftExpression, op, rightExpression);
+	}
+	
 	static DoMathExpression parseDoMath(String expression)
 	{
 		//do-math do-math a + 7 + do-math b + 4 - doesn't work for this YET!
@@ -119,6 +165,12 @@ public class Parser
 		return rs;
 	}
 	
+	static QuestionStatement parseQuestion(TestExpression testExpression, Statement trueStatement, Statement falseStatement)
+	{
+		QuestionStatement qs = new QuestionStatement(testExpression, trueStatement, falseStatement);
+		return qs;
+	}
+	
 	public static void parse(String filename)
 	{
 		try
@@ -135,7 +187,7 @@ public class Parser
 			String[] theProgramLines = fileContents.split(";");
 			for(int i = 0; i < theProgramLines.length; i++)
 			{
-				parseStatement(theProgramLines[i]);
+				Parser.theListOfStatements.add(parseStatement(theProgramLines[i]));
 			}
 		}
 		catch(Exception e)
@@ -157,6 +209,11 @@ public class Parser
 			//must be a do-math expression
 			return Parser.parseDoMath(expression);
 		}
+		else if(theParts[0].equals("test"))
+		{
+			//must be a test expression
+			return Parser.parseTest(expression);
+		}
 		else if(Character.isDigit(theParts[0].charAt(0))) //does the value start with a number
 		{
 			//must a literal expression
@@ -170,7 +227,7 @@ public class Parser
 	}
 	
 	//parses the top level statements within our language
-	static void parseStatement(String s)
+	static Statement parseStatement(String s)
 	{
 		//split the string on white space (1 or more spaces)
 		String[] theParts = s.split("\\s+");
@@ -186,8 +243,25 @@ public class Parser
 			String everythingAfterTheEqualSign = s.substring(posOfEqualSign+1).trim();
 	
 			//parse a remember statement with type, name, and value
-			theListOfStatements.add(Parser.parseRemember(theParts[1], 
-					theParts[2], Parser.parseExpression(everythingAfterTheEqualSign)));
+			return Parser.parseRemember(theParts[1], 
+					theParts[2], Parser.parseExpression(everythingAfterTheEqualSign));
 		}
+		else if(theParts[0].equals("question"))
+		{
+			String expression = s.substring("question".length()).trim();
+			int posOfDoKeyword = expression.indexOf("do");
+			String testExpression = expression.substring(0, posOfDoKeyword);
+			expression = expression.substring(posOfDoKeyword + "do".length()).trim();
+			int posOfOtherwiseKeyword = expression.indexOf("otherwise");
+			String trueStatement = expression.substring(0, posOfOtherwiseKeyword).trim();
+			String falseStatement = expression.substring(posOfOtherwiseKeyword + "otherwise".length()).trim();
+			
+			return Parser.parseQuestion(
+							(TestExpression)Parser.parseExpression(testExpression), 
+							Parser.parseStatement(trueStatement), 
+							Parser.parseStatement(falseStatement));
+			
+		}
+		throw new RuntimeException("Not a known statement type: " + s);
 	}
 }

@@ -19,15 +19,24 @@ public class SpyderInterpreter
 		}
 	}
 	
+	private static void interpretStatement(Statement s)
+	{
+		if(s instanceof RememberStatement)
+		{
+			//interpret a remember statement
+			SpyderInterpreter.interpretRememberStatement((RememberStatement)s);
+		}
+		else if(s instanceof QuestionStatement)
+		{
+			SpyderInterpreter.interpretQuestionStatement((QuestionStatement)s);
+		}
+	}
+	
 	public static void interpret(ArrayList<Statement> theStatements)
 	{
 		for(Statement s : theStatements)
 		{
-			if(s instanceof RememberStatement)
-			{
-				//interpret a remember statement
-				SpyderInterpreter.interpretRememberStatement((RememberStatement)s);
-			}
+			SpyderInterpreter.interpretStatement(s);
 		}
 	}
 	
@@ -84,6 +93,80 @@ public class SpyderInterpreter
 		throw new RuntimeException("Not a valid math operator: " + math_op);
 	}
 	
+	private static int interpretTestExpression(TestExpression te)
+	{
+		int leftValue = SpyderInterpreter.getExpressionValue(te.getLeft());
+		int rightValue = SpyderInterpreter.getExpressionValue(te.getRight());
+		String op = te.getOp();
+		if(op.equals("<"))
+		{
+			if(leftValue < rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if(op.equals("<="))
+		{
+			if(leftValue <= rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if(op.equals(">"))
+		{
+			if(leftValue > rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if(op.equals(">="))
+		{
+			if(leftValue >= rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if(op.equals("!="))
+		{
+			if(leftValue != rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if(op.equals("=="))
+		{
+			if(leftValue <= rightValue)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		throw new RuntimeException("Not a valid boolean operator: " + op);
+	}
+	
 	private static int interpretResolveExpression(ResolveExpression rs)
 	{
 		
@@ -124,6 +207,10 @@ public class SpyderInterpreter
 		{
 			return SpyderInterpreter.interpretDoMathExpression((DoMathExpression) e);
 		}
+		else if(e instanceof TestExpression)
+		{
+			return SpyderInterpreter.interpretTestExpression((TestExpression) e);
+		}
 		throw new RuntimeException("Not a known expression type: " + e.getExpressionType());
 	}
 	
@@ -136,4 +223,23 @@ public class SpyderInterpreter
 		SpyderInterpreter.theEnv.addVariable(rs.getName(), answer);
 		SpyderInterpreter.theOutput.add("<HIDDEN> Added " + rs.getName() + " = " + answer + " to the variable environment.");
 	}
+	
+	private static void interpretQuestionStatement(QuestionStatement qs)
+	{
+		//we need to resolve this expression before we can actually remember anything
+		TestExpression testExpression = qs.getTestExpression();
+		int answer = SpyderInterpreter.getExpressionValue(testExpression);
+		
+		if(answer == 1)
+		{
+			//testExpression was true, so execute the trueStatement
+			SpyderInterpreter.interpretStatement(qs.getTrueStatement());
+		}
+		else
+		{
+			//testExpression was false, so execute the falseStatement
+			SpyderInterpreter.interpretStatement(qs.getFalseStatement());
+		}
+	}
+	
 }
