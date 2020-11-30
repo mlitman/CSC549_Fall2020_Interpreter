@@ -38,6 +38,10 @@ public class SpyderInterpreter
 		{
 			SpyderInterpreter.interpretWhileStatement((WhileStatement)s);
 		}
+		else if(s instanceof PrintStatement)
+		{
+			SpyderInterpreter.interpretPrintStatement((PrintStatement)s);
+		}
 	}
 	
 	public static void interpret(ArrayList<Statement> theStatements)
@@ -258,6 +262,13 @@ public class SpyderInterpreter
 		
 		SpyderInterpreter.theEnv.updateVariable(us.getName(), answer);
 		SpyderInterpreter.theOutput.add("<HIDDEN> Updated " + us.getName() + " = " + answer + " in the variable environment.");
+	}
+	
+	private static void interpretPrintStatement(PrintStatement ps)
+	{
+		Expression expression_to_print = ps.getExpression_to_print();
+		int answer = SpyderInterpreter.getExpressionValue(expression_to_print);
+		SpyderInterpreter.theOutput.add("***** " + answer);
 	}
 	
 	private static void interpretQuestionStatement(QuestionStatement qs)

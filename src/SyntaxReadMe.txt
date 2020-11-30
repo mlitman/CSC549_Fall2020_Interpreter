@@ -3,6 +3,7 @@ remember <type> <var-name> = <expression>;
 question <test-expression> do <true-statement> otherwise <false-statement>;
 update <var-name> = <expression>;
 while <test-expression> do <statement>;
+print <expression>;
 
 Expressions:
 resolve expressions - int-literal or var-env-lookup-int

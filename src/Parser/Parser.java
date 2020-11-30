@@ -171,6 +171,12 @@ public class Parser
 		return ws;
 	}
 	
+	static PrintStatement parsePrint(Expression expression_to_print)
+	{
+		PrintStatement ps = new PrintStatement(expression_to_print);
+		return ps;
+	}
+	
 	static UpdateStatement parseUpdate(String name, Expression valueExpression)
 	{
 		UpdateStatement us = new UpdateStatement(name, valueExpression);
@@ -257,6 +263,12 @@ public class Parser
 			//parse a remember statement with type, name, and value
 			return Parser.parseRemember(theParts[1], 
 					theParts[2], Parser.parseExpression(everythingAfterTheEqualSign));
+		}
+		else if(theParts[0].equals("print"))
+		{
+			String temp = s.substring("print".length()).trim();
+			Expression expression_to_print = Parser.parseExpression(temp);
+			return Parser.parsePrint(expression_to_print);
 		}
 		else if(theParts[0].equals("while"))
 		{
