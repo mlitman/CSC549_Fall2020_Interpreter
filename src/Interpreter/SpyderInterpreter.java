@@ -26,6 +26,10 @@ public class SpyderInterpreter
 			//interpret a remember statement
 			SpyderInterpreter.interpretRememberStatement((RememberStatement)s);
 		}
+		else if(s instanceof UpdateStatement)
+		{
+			SpyderInterpreter.interpretUpdateStatement((UpdateStatement)s);
+		}
 		else if(s instanceof QuestionStatement)
 		{
 			SpyderInterpreter.interpretQuestionStatement((QuestionStatement)s);
@@ -222,6 +226,16 @@ public class SpyderInterpreter
 		
 		SpyderInterpreter.theEnv.addVariable(rs.getName(), answer);
 		SpyderInterpreter.theOutput.add("<HIDDEN> Added " + rs.getName() + " = " + answer + " to the variable environment.");
+	}
+	
+	private static void interpretUpdateStatement(UpdateStatement us)
+	{
+		//we need to resolve this expression before we can actually remember anything
+		Expression valueExpression = us.getValueExpression();
+		int answer = SpyderInterpreter.getExpressionValue(valueExpression);
+		
+		SpyderInterpreter.theEnv.updateVariable(us.getName(), answer);
+		SpyderInterpreter.theOutput.add("<HIDDEN> Updated " + us.getName() + " = " + answer + " in the variable environment.");
 	}
 	
 	private static void interpretQuestionStatement(QuestionStatement qs)

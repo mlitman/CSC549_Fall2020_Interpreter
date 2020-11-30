@@ -165,6 +165,12 @@ public class Parser
 		return rs;
 	}
 	
+	static UpdateStatement parseUpdate(String name, Expression valueExpression)
+	{
+		UpdateStatement us = new UpdateStatement(name, valueExpression);
+		return us;
+	}
+	
 	static QuestionStatement parseQuestion(TestExpression testExpression, Statement trueStatement, Statement falseStatement)
 	{
 		QuestionStatement qs = new QuestionStatement(testExpression, trueStatement, falseStatement);
@@ -245,6 +251,15 @@ public class Parser
 			//parse a remember statement with type, name, and value
 			return Parser.parseRemember(theParts[1], 
 					theParts[2], Parser.parseExpression(everythingAfterTheEqualSign));
+		}
+		else if(theParts[0].equals("update"))
+		{
+			String temp = s.substring("update".length()).trim();
+			String[] tempParts = temp.split("=");
+			String varName = tempParts[0].trim();
+			String expressionString = tempParts[1].trim();
+			Expression theExpression = Parser.parseExpression(expressionString);
+			return Parser.parseUpdate(varName, theExpression);
 		}
 		else if(theParts[0].equals("question"))
 		{

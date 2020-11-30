@@ -18,6 +18,18 @@ public class VariableEnvironment
 		}
 	}
 	
+	public void updateVariable(String name, int value)
+	{
+		for(NameValuePair nvp : this.theVariables)
+		{
+			if(nvp.getName().equals(name))
+			{
+				nvp.setValue(value);
+				return;
+			}
+		}
+	}
+	
 	//take in a name and a value and create a NameValuePair and add
 	//it to theVariables
 	public void addVariable(String name, int value)
