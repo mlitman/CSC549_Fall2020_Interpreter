@@ -34,6 +34,10 @@ public class SpyderInterpreter
 		{
 			SpyderInterpreter.interpretQuestionStatement((QuestionStatement)s);
 		}
+		else if(s instanceof WhileStatement)
+		{
+			SpyderInterpreter.interpretWhileStatement((WhileStatement)s);
+		}
 	}
 	
 	public static void interpret(ArrayList<Statement> theStatements)
@@ -228,6 +232,24 @@ public class SpyderInterpreter
 		SpyderInterpreter.theOutput.add("<HIDDEN> Added " + rs.getName() + " = " + answer + " to the variable environment.");
 	}
 	
+	private static void interpretWhileStatement(WhileStatement ws)
+	{
+		if(ws.getTest_expression() instanceof TestExpression)
+		{
+			TestExpression te = (TestExpression)ws.getTest_expression();
+			Statement stmt = ws.getStatement_to_execute();
+			while(SpyderInterpreter.interpretTestExpression(te) != 0)
+			{
+				SpyderInterpreter.interpretStatement(stmt);
+			}
+		}
+		else
+		{
+			throw new RuntimeException("While Loops require a TestExpression!!!");
+		}
+		
+		
+	}
 	private static void interpretUpdateStatement(UpdateStatement us)
 	{
 		//we need to resolve this expression before we can actually remember anything

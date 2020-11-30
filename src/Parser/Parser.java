@@ -165,6 +165,12 @@ public class Parser
 		return rs;
 	}
 	
+	static WhileStatement parseWhile(Expression testExpression, Statement executeStatement)
+	{
+		WhileStatement ws = new WhileStatement(testExpression, executeStatement);
+		return ws;
+	}
+	
 	static UpdateStatement parseUpdate(String name, Expression valueExpression)
 	{
 		UpdateStatement us = new UpdateStatement(name, valueExpression);
@@ -251,6 +257,17 @@ public class Parser
 			//parse a remember statement with type, name, and value
 			return Parser.parseRemember(theParts[1], 
 					theParts[2], Parser.parseExpression(everythingAfterTheEqualSign));
+		}
+		else if(theParts[0].equals("while"))
+		{
+			//while <test-expression> do <statement>;
+			String temp = s.substring("while".length()).trim();
+			String[] tempParts = temp.split("do ");
+			String test_expression_string = tempParts[0].trim();
+			String execute_statement_string = tempParts[1].trim();
+			Expression test_expression = Parser.parseExpression(test_expression_string);
+			Statement execute_statement = Parser.parseStatement(execute_statement_string);
+			return Parser.parseWhile(test_expression, execute_statement);
 		}
 		else if(theParts[0].equals("update"))
 		{
