@@ -42,6 +42,10 @@ public class SpyderInterpreter
 		{
 			SpyderInterpreter.interpretPrintStatement((PrintStatement)s);
 		}
+		else if(s instanceof BlockStatement)
+		{
+			SpyderInterpreter.interpretBlockStatement((BlockStatement)s);
+		}
 	}
 	
 	public static void interpret(ArrayList<Statement> theStatements)
@@ -269,6 +273,15 @@ public class SpyderInterpreter
 		Expression expression_to_print = ps.getExpression_to_print();
 		int answer = SpyderInterpreter.getExpressionValue(expression_to_print);
 		SpyderInterpreter.theOutput.add("***** " + answer);
+	}
+	
+	private static void interpretBlockStatement(BlockStatement bs)
+	{
+		ArrayList<Statement> statements = bs.getStatements();
+		for(Statement stmt : statements)
+		{
+			SpyderInterpreter.interpretStatement(stmt);
+		}
 	}
 	
 	private static void interpretQuestionStatement(QuestionStatement qs)

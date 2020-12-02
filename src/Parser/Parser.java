@@ -177,6 +177,12 @@ public class Parser
 		return ps;
 	}
 	
+	static BlockStatement parseBlock(ArrayList<Statement> statements)
+	{
+		BlockStatement bs = new BlockStatement(statements);
+		return bs;
+	}
+	
 	static UpdateStatement parseUpdate(String name, Expression valueExpression)
 	{
 		UpdateStatement us = new UpdateStatement(name, valueExpression);
@@ -248,7 +254,7 @@ public class Parser
 	static Statement parseStatement(String s)
 	{
 		//split the string on white space (1 or more spaces)
-		String[] theParts = s.split("\\s+");
+		String[] theParts = s.trim().split("\\s+");
 		// remember int b = do-math 5 + a;
 		//s = "remember int a = 5"
 		//parts = {"remember", "int", "a", "=", "5"}
@@ -269,6 +275,22 @@ public class Parser
 			String temp = s.substring("print".length()).trim();
 			Expression expression_to_print = Parser.parseExpression(temp);
 			return Parser.parsePrint(expression_to_print);
+		}
+		else if(theParts[0].equals("begin")) //NOT CURRENTLY COMPATIBLE WITH EMBEDDED BLOCKS
+		{
+			//begin print e, update e = do-math e - 1 end
+			String temp = s.substring("begin".length(),s.length() - "end".length()).trim();
+			//temp is currently: print e, update e = do-math e - 1
+			//how do we split this into a collection of statements?
+			//if we split on "," this would assume that there are zero block 
+			//statements inside this block statement.
+			String[] blockParts = temp.split(",");
+			ArrayList<Statement> theStatements = new ArrayList<Statement>();
+			for(String stmt : blockParts)
+			{
+				theStatements.add(Parser.parseStatement(stmt.trim()));
+			}
+			return Parser.parseBlock(theStatements);
 		}
 		else if(theParts[0].equals("while"))
 		{
